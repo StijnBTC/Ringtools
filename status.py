@@ -41,7 +41,6 @@ class Status:
             node1 = self.lnd.get_node(response.node1_pub)
             node2 = self.lnd.get_node(response.node2_pub)
             disabled = response.node1_policy.disabled or response.node2_policy.disabled
-            # print(response)
             self.print_channel(response.channel_id, node1.alias, node2.alias, disabled)
 
     def print_channel(self, channel_id, node1_alias, node2_alias, chan_disabled):
