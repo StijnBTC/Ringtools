@@ -13,9 +13,12 @@ class RingTools:
         self.arguments = arguments
 
     def start(self):
-        print(self.arguments.function)
         if self.arguments.function == "status":
-            Status(self.lnd, self.output, self.arguments.channels_file, self.arguments.loop).run()
+            Status(self.lnd,
+                   self.output,
+                   self.arguments.channels_file,
+                   self.arguments.loop,
+                   self.arguments.show_fees).run()
         pass
 
 
@@ -29,6 +32,13 @@ def get_argument_parser():
     parser = argparse.ArgumentParser()
     # This is needed for the cert and macaroon of LND
     parser.add_argument(
+        dest="function",
+        choices=['status'],
+        help="Choose which function of the RingTools you would "
+             "like to use",
+        default="help",
+    )
+    parser.add_argument(
         "--lnddir",
         default="~/.lnd",
         dest="lnddir",
@@ -40,14 +50,13 @@ def get_argument_parser():
         dest="grpc",
         help="(default localhost:10009) lnd gRPC endpoint",
     )
-    parser.add_argument(dest="function", choices=['status'])
     status_group = parser.add_argument_group(
         "status",
         "Get the current status of all channels",
     )
     status_group.add_argument(
         "-channels-file",
-        "-f",
+        "-c",
         default="./channels.txt",
         dest="channels_file",
         help="(default ./channels.txt) channels file"
@@ -58,6 +67,13 @@ def get_argument_parser():
         action="store_true",
         dest="loop",
         help="(default False) Keeps checking channel status"
+    )
+    status_group.add_argument(
+        '-f',
+        '--show-fees',
+        action="store_true",
+        dest="show_fees",
+        help="(default False) Shows fees in status screen"
     )
     return parser
 
