@@ -2,6 +2,8 @@ import os
 import sys
 from yachalk import chalk
 
+ALIAS_LENGTH = 32
+
 
 class Output:
     def __init__(self, lnd):
@@ -26,8 +28,11 @@ def format_error(error):
     return chalk.red(error)
 
 
-def format_channel(channel_id, node1_alias, node2_alias, chanDisabled):
-    text = f'{channel_id:<18} {format_alias(node1_alias):<32} {format_alias(node2_alias):<32}'
+def format_channel(channel, node1_alias, node2_alias, chanDisabled, show_fees):
+    text = f'{channel.channel_id:<18} {format_alias(node1_alias):<40} {format_alias(node2_alias):<40}'
+    if show_fees:
+        text += f'base {channel.node1_policy.fee_base_msat:<5} rate {channel.node1_policy.fee_rate_milli_msat:<5} '\
+                f'base {channel.node2_policy.fee_base_msat:<5} rate {channel.node2_policy.fee_rate_milli_msat:<5} '
     if chanDisabled:
         return chalk.bg_red(text)
     else:
