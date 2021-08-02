@@ -4,6 +4,7 @@ import sys
 from lnd import Lnd
 from output import Output
 from status import Status
+from utils import is_umbrel
 
 
 class RingTools:
@@ -38,11 +39,16 @@ def get_argument_parser():
              "like to use",
         default="help",
     )
+    #If nodeos is Umbrel use the default umbrel lnd location
+    lnd_dir = "~/.lnd"
+    if is_umbrel():
+        lnd_dir = "~/umbrel/umbrel/lnd/"
+
     parser.add_argument(
         "--lnddir",
-        default="~/.lnd",
+        default=lnd_dir,
         dest="lnddir",
-        help="(default ~/.lnd) lnd directory",
+        help="(default ~/.lnd or ~/umbrel/umbrel/lnd/ when default umbrel installation) lnd directory",
     )
     parser.add_argument(
         "--grpc",
