@@ -38,6 +38,9 @@ class Status:
         for channelID in channels:
             if len(channelID) != 18:
                 continue
+            if not channelID.isnumeric():
+                continue
+
             response = self.lnd.get_edge(int(channelID))
             node1 = self.lnd.get_node(response.node1_pub)
             node2 = self.lnd.get_node(response.node2_pub)
