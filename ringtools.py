@@ -42,13 +42,13 @@ def get_argument_parser():
     #If nodeos is Umbrel use the default umbrel lnd location
     lnd_dir = "~/.lnd"
     if is_umbrel():
-        lnd_dir = "~/umbrel/umbrel/lnd/"
+        lnd_dir = "~/umbrel/lnd"
 
     parser.add_argument(
         "--lnddir",
         default=lnd_dir,
         dest="lnddir",
-        help="(default ~/.lnd or ~/umbrel/umbrel/lnd/ when default umbrel installation) lnd directory",
+        help="(default ~/.lnd or ~/umbrel/lnd/ when default umbrel installation) lnd directory",
     )
     parser.add_argument(
         "--grpc",
