@@ -1,7 +1,8 @@
 import os
+import grpc
 from time import sleep
 
-from output import format_error, clear_screen, format_channel
+from output import format_channel_error, format_error, clear_screen, format_channel
 
 LOOP_SLEEP_TIME = 10
 
@@ -41,12 +42,17 @@ class Status:
             if not channelID.isnumeric():
                 continue
 
-            response = self.lnd.get_edge(int(channelID))
-            node1 = self.lnd.get_node(response.node1_pub)
-            node2 = self.lnd.get_node(response.node2_pub)
-            disabled = response.node1_policy.disabled or response.node2_policy.disabled
-            self.print_channel(response, node1.alias, node2.alias, disabled)
-
+            try:
+              response = self.lnd.get_edge(int(channelID))
+              node1 = self.lnd.get_node(response.node1_pub)
+              node2 = self.lnd.get_node(response.node2_pub)
+              disabled = response.node1_policy.disabled or response.node2_policy.disabled
+              self.print_channel(response, node1.alias, node2.alias, disabled)
+            except grpc.RpcError as e:
+              self.output.print_line(format_channel_error(channelID, e.details()))
+            except Exception as error:
+              self.output.print_line(format_channel_error(channelID, repr(error)))
+              
     def print_channel(self, channel, node1_alias, node2_alias, chan_disabled):
         self.output.print_line(format_channel(channel, node1_alias, node2_alias, chan_disabled, self.show_fees))
 
