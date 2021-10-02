@@ -38,6 +38,9 @@ def format_channel(channel, node1_alias, node2_alias, chanDisabled, show_fees):
     else:
         return text
 
-
+def format_channel_error(channelID, error):
+    text = f'{channelID:<18} ERROR: {error:<100}'
+    return chalk.bg_red(text)
+    
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
