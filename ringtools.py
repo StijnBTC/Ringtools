@@ -5,7 +5,7 @@ from lnd import Lnd
 from output import Output
 from status import Status
 from utils import is_umbrel
-
+from checkring import CheckRing
 
 class RingTools:
     def __init__(self, arguments):
@@ -19,6 +19,11 @@ class RingTools:
                    self.output,
                    self.arguments.channels_file,
                    self.arguments.loop,
+                   self.arguments.show_fees).run()
+        elif self.arguments.function == "check":
+            CheckRing(self.lnd,
+                   self.output,
+                   self.arguments.pubkeys_file,
                    self.arguments.show_fees).run()
         pass
 
@@ -34,7 +39,7 @@ def get_argument_parser():
     # This is needed for the cert and macaroon of LND
     parser.add_argument(
         dest="function",
-        choices=['status'],
+        choices=['status', 'check'],
         help="Choose which function of the RingTools you would "
              "like to use",
         default="help",
@@ -56,6 +61,13 @@ def get_argument_parser():
         dest="grpc",
         help="(default localhost:10009) lnd gRPC endpoint",
     )
+    check_group = parser.add_argument(
+        "-pubkeys-file",
+        "-pk",
+        default="./pubkeys.txt",
+        dest="pubkeys_file",
+        help="(default ./pubkeys.txt) pubkeys file"
+    )
     status_group = parser.add_argument_group(
         "status",
         "Get the current status of all channels",
@@ -67,6 +79,7 @@ def get_argument_parser():
         dest="channels_file",
         help="(default ./channels.txt) channels file"
     )
+    
     status_group.add_argument(
         "-l",
         "--loop",

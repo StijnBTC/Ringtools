@@ -48,6 +48,13 @@ class Lnd:
     def get_edge(self, channel_id):
         return self.stub.GetChanInfo(ln.ChanInfoRequest(chan_id=channel_id))
 
+
+    @lru_cache(maxsize=None)
+    def get_node_channels(self, pubkey):
+        return self.stub.GetNodeInfo(ln.NodeInfoRequest(
+            
+            pub_key=pubkey, include_channels=True))
+
     @lru_cache(maxsize=None)
     def get_node_alias(self, pub_key):
         return self.stub.GetNodeInfo(
