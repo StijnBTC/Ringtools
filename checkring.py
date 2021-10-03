@@ -7,11 +7,13 @@ from yachalk import chalk
 
 
 class CheckRing:
-    def __init__(self, lnd, output, pubkeys_file, show_fees):
+    def __init__(self, lnd, output, pubkeys_file, write_channels, show_fees, channels_file):
         self.lnd = lnd
         self.output = output
         self.pubkeys_file = pubkeys_file
         self.show_fees = show_fees
+        self.write_channels = write_channels
+        self.channels_file = channels_file
 
     def read_file(self, file):
         if not os.path.isfile(file):
@@ -26,6 +28,7 @@ class CheckRing:
 
     def once(self):
         pubkeys = self.read_file(self.pubkeys_file)
+        channelList = []
 
         for idx, pubkeyInfo in enumerate(pubkeys):
             # pubkeys format is <pubkey>,<telegram username> to be able to mimic the manual pubkey overview with usernames
@@ -46,6 +49,7 @@ class CheckRing:
                         hasChannel = True
                         channelId = channel.channel_id
                         channelInfo = channel
+                        channelList.append(channelId)
 
                 if hasChannel:
                     outputHas = chalk.green('✅')
@@ -71,6 +75,11 @@ class CheckRing:
             except Exception as error:
                 self.output.print_line(
                     format_channel_error(pubkey, repr(error)))
+        if self.write_channels:
+            f = open(self.channels_file, "w")
+            for c in channelList:
+                f.write(str(c) + "\r\n")
+            f.close()
 
     def print_channel(self, channel, node1_alias, node2_alias, chan_disabled):
         self.output.print_line(format_channel(
