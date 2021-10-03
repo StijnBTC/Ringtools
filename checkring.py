@@ -5,8 +5,6 @@ from time import sleep
 from output import format_channel_error, format_error, clear_screen, format_channel
 from yachalk import chalk
 
-LOOP_SLEEP_TIME = 10
-
 
 class CheckRing:
     def __init__(self, lnd, output, pubkeys_file, show_fees):
@@ -28,18 +26,16 @@ class CheckRing:
 
     def once(self):
         pubkeys = self.read_file(self.pubkeys_file)
-        # response = self.lnd.get_node(pubkeys[0].split(',')[0])
-        # print(response)
+
         for idx, pubkeyInfo in enumerate(pubkeys):
+            # pubkeys format is <pubkey>,<telegram username> to be able to mimic the manual pubkey overview with usernames
             pubkey = pubkeyInfo.split(',')
             try:
-                #print(pubkey[0], idx)
                 response = self.lnd.get_node_channels(pubkey[0])
 
                 print("%s" %
                       (chalk.yellow(response.node.alias)))
 
-            #  print("Number of channels: %s" % len(response.channels))
                 channelTo = pubkeys[(idx+1) % (len(pubkeys))].split(',')[0]
                 hasChannel = False
                 channelId = 0
