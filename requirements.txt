@@ -2,3 +2,4 @@ googleapis-common-protos==1.53.0
 grpcio==1.39.0
 protobuf==3.17.3
 yachalk==0.1.4
+pyln-client==0.10.2.post0

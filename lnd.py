@@ -8,11 +8,12 @@ from grpc_gen import router_pb2 as lnrouter
 from grpc_gen import router_pb2_grpc as lnrouterrpc
 from grpc_gen import lightning_pb2 as ln
 from grpc_gen import lightning_bp2_grpc as lnrpc
+from lnclient import LNClient
 
 MESSAGE_SIZE_MB = 50 * 1024 * 1024
 
 
-class Lnd:
+class Lnd(LNClient):
     def __init__(self, lnd_dir, server):
         os.environ["GRPC_SSL_CIPHER_SUITES"] = "HIGH+ECDSA"
         lnd_dir = expanduser(lnd_dir)

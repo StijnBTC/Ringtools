@@ -8,8 +8,8 @@ LOOP_SLEEP_TIME = 10
 
 
 class Status:
-    def __init__(self, lnd, output, channels_file, keep_loop, show_fees):
-        self.lnd = lnd
+    def __init__(self, client, output, channels_file, keep_loop, show_fees):
+        self.client = client
         self.output = output
         self.channels_file = channels_file
         self.keep_loop = keep_loop
@@ -37,15 +37,17 @@ class Status:
     def once(self):
         channels = self.read_file(self.channels_file)
         for channelID in channels:
-            if len(channelID) != 18:
-                continue
-            if not channelID.isnumeric():
-                continue
+            # TODO: Fix this with short channel ids or convert between formats
+            # if len(channelID) != 18:
+            #     continue
+            # if not channelID.isnumeric():
+            #     continue
 
             try:
-              response = self.lnd.get_edge(int(channelID))
-              node1 = self.lnd.get_node(response.node1_pub)
-              node2 = self.lnd.get_node(response.node2_pub)
+              response = self.client.get_edge(channelID)
+              node1 = self.client.get_node(response.node1_pub)
+              node2 = self.client.get_node(response.node2_pub)
+              
               disabled = response.node1_policy.disabled or response.node2_policy.disabled
               self.print_channel(response, node1.alias, node2.alias, disabled)
             except grpc.RpcError as e:

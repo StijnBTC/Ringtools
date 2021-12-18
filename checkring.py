@@ -7,8 +7,8 @@ from yachalk import chalk
 
 
 class CheckRing:
-    def __init__(self, lnd, output, pubkeys_file, write_channels, show_fees, channels_file):
-        self.lnd = lnd
+    def __init__(self, client, output, pubkeys_file, write_channels, show_fees, channels_file):
+        self.client = client
         self.output = output
         self.pubkeys_file = pubkeys_file
         self.show_fees = show_fees
@@ -34,10 +34,11 @@ class CheckRing:
             # pubkeys format is <pubkey>,<telegram username> to be able to mimic the manual pubkey overview with usernames
             pubkey = pubkeyInfo.split(',')
             try:
-                response = self.lnd.get_node_channels(pubkey[0])
+                alias = self.client.get_node_alias(pubkey[0])
+                response = self.client.get_node_channels(pubkey[0])
 
                 print("%s" %
-                      (chalk.yellow(response.node.alias)))
+                      (chalk.yellow(alias)))
 
                 channelTo = pubkeys[(idx+1) % (len(pubkeys))].split(',')[0]
                 hasChannel = False
@@ -62,9 +63,9 @@ class CheckRing:
                     print(chalk.green("Channel is open with ID: %s") % channelId)
 
                     if self.show_fees:
-                        response = self.lnd.get_edge(int(channelId))
-                        node1 = self.lnd.get_node(response.node1_pub)
-                        node2 = self.lnd.get_node(response.node2_pub)
+                        response = self.client.get_edge(int(channelId))
+                        node1 = self.client.get_node(response.node1_pub)
+                        node2 = self.client.get_node(response.node2_pub)
                         disabled = response.node1_policy.disabled or response.node2_policy.disabled
                         self.print_channel(
                             channelInfo, node1.alias, node2.alias, disabled)
