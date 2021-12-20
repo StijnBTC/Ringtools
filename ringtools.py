@@ -1,5 +1,6 @@
 import argparse
 import sys
+from clightning import CLightning
 
 from lnd import Lnd
 from output import Output
@@ -9,19 +10,22 @@ from checkring import CheckRing
 
 class RingTools:
     def __init__(self, arguments):
-        self.lnd = Lnd(arguments.lnddir, arguments.grpc)
-        self.output = Output(self.lnd)
+        if (arguments.client == 'cl'):
+            self.client = CLightning(arguments.clrpc)
+        else:
+            self.client = Lnd(arguments.lnddir, arguments.grpc)
+        self.output = Output(self.client)
         self.arguments = arguments
 
     def start(self):
         if self.arguments.function == "status":
-            Status(self.lnd,
+            Status(self.client,
                    self.output,
                    self.arguments.channels_file,
                    self.arguments.loop,
                    self.arguments.show_fees).run()
         elif self.arguments.function == "check":
-            CheckRing(self.lnd,
+            CheckRing(self.client,
                    self.output,
                    self.arguments.pubkeys_file,
                    self.arguments.write_channels,
@@ -47,6 +51,15 @@ def get_argument_parser():
              "like to use",
         default="help",
     )
+
+    parser.add_argument(
+        "--client",
+        choices=['lnd', 'cl'],
+        default="lnd",
+        dest="client",
+        help="(default: lnd) Which client to use",
+    )
+
     #If nodeos is Umbrel use the default umbrel lnd location
     lnd_dir = "~/.lnd"
     if is_umbrel():
@@ -63,6 +76,13 @@ def get_argument_parser():
         default="localhost:10009",
         dest="grpc",
         help="(default localhost:10009) lnd gRPC endpoint",
+    )
+
+    parser.add_argument(
+        "--clrpc",
+        default="~/.lightning/bitcoin/lightning-rpc",
+        dest="clrpc",
+        help="(default ~/.lightning/bitcoin/lightning-rpc) C-Lightning unix-socket",
     )
     
     status_group = parser.add_argument_group(
